@@ -13,14 +13,14 @@ const validateLoginInput = require("../../validation/login");
 // Load User Model 
 const User = require('../../models/User');
 
-// @route GET api/uers/test
+// @route GET api/users/test
 // @desc  Tests users route
-// @acces Public
+// @access Public
 router.get('/test', (req, res) => res.json({msg: "Users Works"}));
 
-// @route GET api/uers/register
+// @route GET api/users/register
 // @desc  Register user
-// @acces Public
+// @access Public
 router.post('/register', (req, res) => {
     const { errors, isValid } = validateRegisterInput(req.body);
 
@@ -31,7 +31,8 @@ router.post('/register', (req, res) => {
 
   User.findOne({email:req.body.email}).then(user => {
       if (user) {
-          return res.status(400).json({email : 'Email already exists'});
+          errors.email = 'Email already exists';
+          return res.status(400).json(errors);
       }   else{
           const avatar = gravatar.url(req.body.email, {
               s: '200', // Size
@@ -59,9 +60,9 @@ router.post('/register', (req, res) => {
   });
 });
 
-// @route GET api/uers/Login
+// @route GET api/users/Login
 // @desc  Login User / Returning JWT Token
-// @acces Public
+// @access Public
 router.post('/login', (req, res) => {
     const { errors, isValid } = validateLoginInput(req.body);
 
@@ -103,16 +104,16 @@ router.post('/login', (req, res) => {
                 }
             );
             }else{
-                errors.email = 'Password Incorrect';
+                errors.password = 'Password Incorrect';
                 return res.status(400).json(errors);
             }
         });
     });
 });
 
-// @route GET api/uers/current
+// @route GET api/users/current
 // @desc  Return current user
-// @acces Private
+// @access Private
 router.get(
     '/current',
  passport.authenticate('jwt', {session: false}),
